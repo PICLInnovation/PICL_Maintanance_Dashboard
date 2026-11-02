@@ -232,7 +232,15 @@ function setDays(lo,hi){const n=S.dys.length-1;lo=Math.max(0,Math.min(n,lo));hi=
 function dayNav(d){const n=S.dys.length-1,i=S.dlo===S.dhi?S.dlo+d:S.dhi,j=Math.max(0,Math.min(n,i));setDays(j,j)}
 function RGX(di,m0,m1){const k=S.dys;if(!k||!k.length)return [m0,m1];return [k[S.dlo],k[S.dhi]]}
 function pillTG(){document.querySelectorAll('.pl2').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tg))}
-function setTG(g){S.tg=g;pillTG();render()}
+function setTG(g){S.tg=g;pillTG();
+ if(S.mode==='lead'){render();return}
+ const fm=$('fm');
+ if(g==='month'){if(fm.value!=='all'){fm.value='all';buildDates()}setDays(0,S.dys.length-1);return}   /* Monthly: all months */
+ if(fm.value==='all'){fm.value=fm.options[0].value;buildDates()}                                          /* Daily / Weekly: one month */
+ const n=S.dys.length-1;
+ if(g==='week'){setDays(0,n);return}                                                                      /* Weekly: whole month, weekly buckets */
+ let lo=n,c=0;for(let i=n;i>=0;i--){lo=i;if(new Date(S.dys[i]+'T00:00').getDay()&&++c===7)break}           /* Daily: last 7 working days */
+ setDays(lo,n)}
 const DS=(recsAll.map(r=>r.d).concat(P[0]).sort()[0]).slice(0,7)+'-01';
 function wk(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);return Math.ceil(((t-Date.UTC(t.getUTCFullYear(),0,1))/864e5+1)/7)}
 function buckets(a,b,g){const o=[],A=new Date(a+'T00:00'),B=new Date(b+'T00:00'),fm=d=>d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
@@ -316,7 +324,7 @@ function apList(){
 function apCard(){return `<div class="card sumc apc"><div class="sh"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#f5921f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><b>Action Plan</b><small class="ctx">How to improve · this selection</small><span></span></div><div id="apl">${apList()}</div></div>`}
 function render(){syncMode();buildLines();
  const di=$('fd').value,[m0,m1]=monthRange($('fm').value),[a,b]=S.mode==='lead'?leadRange():RGX(di,m0,m1),ln=+$('fl').value||0,LN=l=>ln?(ln<=l?1:0):l,sh=$('fs').value,wd=workdays(a,b),secs=S.v==='Overview'?Object.keys(CFG[S.d]):[S.v];
- const TR=S.mode==='lead'||a!==b;{const g=$('tgg');if(g)g.style.opacity=a===b?.4:1}
+ const TR=S.mode==='lead'||a!==b;{const g=$('tgg');if(g)g.style.opacity=1}
  const inScope=r=>r.sec.startsWith(S.d+'-')&&secs.includes(r.sec.split('-')[1])&&r.d>=a&&r.d<=b&&(!sh||r.sh===sh)&&(!ln||r.line===ln);
  const rs=recs.filter(inScope),ptR=recsAll.filter(r=>isPTr(r)&&inScope(r)),planned=secs.reduce((s,x)=>s+plan(x,a,b,ln),0),T=stats(rs,planned),TT=tgtFor(secs,rs),_th=(TH.mttr=[TT.mttr,TT.mttr*1.5],TH.mtbf=TT.mtbf==null?null:[TT.mtbf,TT.mtbf*0.8]),RH=secs.reduce((p,x)=>{const q=runst(x,a,b,ln);return[p[0]+q[0],p[1]+q[1]]},[0,0]),RHn=secs.reduce((p,x)=>p+(ln?(ln<=CFG[S.d][x].l?1:0):CFG[S.d][x].l),0);
  const gc=theme()==='dark'?'#264646':'#e6eeee',tc=theme()==='dark'?'#b3c8c8':'#4c5e5e';Chart.defaults.color=tc;Chart.defaults.font.family='Inter';(Chart.defaults.layout||(Chart.defaults.layout={})).padding={top:6,right:12,left:4,bottom:2};if(Chart.defaults.plugins&&Chart.defaults.plugins.legend){const L=Chart.defaults.plugins.legend.labels;L.usePointStyle=true;L.boxWidth=8;L.padding=16}
