@@ -227,7 +227,7 @@ const $=id=>document.getElementById(id),f1=1,iso=d=>d.getFullYear()+'-'+String(d
 const n0=x=>Math.round(x).toLocaleString('en-IN'),n1=x=>(+x).toFixed(1),n2=x=>(+x).toFixed(2);
 function theme(){return document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}
 function toggleTheme(){document.documentElement.dataset.theme=theme()==='dark'?'light':'dark';render()}
-const P=/*@P*/["2026-08-01", "2026-11-17", "17 Nov 2026"]/*@E*/;
+const P=/*@P*/["2026-08-01", "2026-11-18", "18 Nov 2026"]/*@E*/;
 function buildMonths(){const ms=[...new Set(recsAll.map(r=>r.d.slice(0,7)).concat(P[1].slice(0,7)))].sort().reverse();$('fm').innerHTML=ms.map(m=>`<option value="${m}">${new Date(m+'-01T00:00').toLocaleDateString('en-GB',{month:'short',year:'numeric'})}</option>`).join('')+'<option value="all">All months</option>'}
 function monthRange(m){if(m==='all')return [DS,P[1]];const [y,mo]=m.split('-').map(Number);return [m+'-01',P[1].slice(0,7)===m?P[1]:iso(new Date(y,mo,0))]}
 function buildDates(){const [a,b]=monthRange($('fm').value),all=$('fm').value==='all',ds=[];for(let d=new Date(a+'T00:00');d<=new Date(b+'T00:00');d.setDate(d.getDate()+1))ds.push(iso(d));S.dys=ds;const fm=x=>new Date(x+'T00:00').toLocaleDateString('en-GB',all?{day:'2-digit',month:'short',year:'2-digit'}:{day:'2-digit',month:'short'});$('fd').innerHTML='<option value="">'+(all?'All days':'All days (MTD)')+'</option>'+ds.slice().reverse().map(x=>`<option value="${x}">${fm(x)}</option>`).join('');$('dlo').max=$('dhi').max=ds.length-1;S.dlo=0;S.dhi=ds.length-1;dsLab()}
